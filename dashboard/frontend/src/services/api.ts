@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8001'
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export interface DeviceItem {
   id: string
@@ -58,6 +58,7 @@ export interface HistoryResponse {
 export interface EnvironmentalIncident {
   id: number
   type: 'temperature' | 'humidity' | 'luminosity'
+  direction: 'high' | 'low'
   title: string
   startedAt: string
   endedAt: string

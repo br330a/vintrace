@@ -233,7 +233,7 @@ Foram validados alertas de temperatura, umidade e luminosidade com sons distinto
 
 ## 9. Testes já executados
 
-- Backend: `8 passed` no `pytest`.
+- Backend: `9 passed` no `pytest`.
 - Frontend: `npm run lint` aprovado.
 - Frontend: `npm run build` aprovado.
 - Orion, IoT Agent e STH-Comet respondendo nos health checks.
@@ -270,6 +270,7 @@ O repositório inclui apenas arquivos de exemplo, como `secrets.example.h` e `.e
 - Manual de software: [`docs/manual-software.md`](docs/manual-software.md)
 - Manual de hardware: [`docs/manual-hardware.md`](docs/manual-hardware.md)
 - Plano de testes: [`docs/plano-de-testes.md`](docs/plano-de-testes.md)
+- Evidências: [`docs/evidencias/README.md`](docs/evidencias/README.md)
 - Equipe: [`docs/equipe.md`](docs/equipe.md)
 - Infraestrutura FIWARE: [`infrastructure/fiware/README.md`](infrastructure/fiware/README.md)
 - Firmware: [`firmware/README.md`](firmware/README.md)
@@ -290,4 +291,11 @@ O Arduino IDE não é necessário durante a demonstração normal.
 
 ## 13. Equipe
 
-Integrantes e RMs estão em [`docs/equipe.md`](docs/equipe.md).
+- Felipe Ilek
+- Bruno Gonçalves Minitti
+- Marcos Vinícius Tudisco
+- Michel Tatsuya Hanada
+- Nicolas Gomes de Almeida
+- Lucas Ferreira Rodrigues Silva
+
+Os RMs estão em [`docs/equipe.md`](docs/equipe.md).

@@ -75,8 +75,6 @@ services:
     container_name: fiware-mongodb
     networks:
       - default
-    ports:
-      - "27017:27017"
     volumes:
       - mongo-db-data:/data/db
 

@@ -41,4 +41,17 @@ A carcaça deve manter:
 - acesso ao USB e ao botão EN/RESET;
 - fixação que impeça curto ou movimento das placas.
 
-Fotos, CAD e evidências da carcaça serão organizados em `docs/evidencias/` e na pasta de hardware durante a finalização física.
+## Encapsulamento
+
+O encapsulamento em formato de garrafa continua como pendência física do projeto. O principal impasse é definir uma solução de abertura/fechamento que permita instalar e manter ESP32, TFT, sensores, buzzer e fiação sem comprometer ventilação, leitura de luz e acesso ao USB.
+
+Antes da impressão final, ainda devem ser definidos:
+
+- mecanismo de abertura e fechamento;
+- janela e fixação do TFT;
+- ventilação do DHT11;
+- exposição do LDR à luz ambiente;
+- saída sonora do buzzer;
+- visibilidade do LED;
+- acesso ao USB e ao botão EN/RESET;
+- suportes internos para evitar movimento e curto-circuito.

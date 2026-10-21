@@ -16,7 +16,7 @@ def test_health_endpoint():
     data = res.json()
     assert data["status"] == "ok"
     assert data["fiware_service"] == "smart"
-    assert data["api_key"] == "TEF"
+    assert "api_key" not in data
 
 
 def test_urn_conversion():
@@ -113,3 +113,38 @@ def test_monitoring_endpoints():
     res_stop = client.post(f"/devices/{dev_id}/monitoring/stop")
     assert res_stop.status_code == 200
     assert res_stop.json()["monitoring"] is False
+
+def test_wine_memory_does_not_count_long_data_gaps_as_continuous_exposure():
+    triggers = TriggerConfig(
+        temperature=SensorRange(min=10.0, max=18.0),
+        humidity=SensorRange(min=0.0, max=100.0),
+        luminosity=SensorRange(min=0.0, max=100.0),
+    )
+
+    # Dois buckets horários anômalos separados por oito horas. O período sem
+    # telemetria não deve virar oito horas extras de exposição.
+    history = HistorySeries(
+        temperature=[
+            HistoryPoint(
+                time="10:00",
+                value=25.0,
+                timestamp="2026-10-20T10:00:00-03:00",
+                min_value=24.0,
+                max_value=26.0,
+                samples=10,
+            ),
+            HistoryPoint(
+                time="18:00",
+                value=25.0,
+                timestamp="2026-10-20T18:00:00-03:00",
+                min_value=24.0,
+                max_value=26.0,
+                samples=10,
+            ),
+        ]
+    )
+
+    wm = calculate_wine_memory("vintrace_gap", history, triggers)
+
+    assert wm.totalIncidents == 1
+    assert wm.exposureTime == "2h 0min"

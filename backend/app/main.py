@@ -79,7 +79,6 @@ def health():
         "environment": settings.app_env,
         "fiware_service": settings.fiware_service,
         "fiware_service_path": settings.fiware_service_path,
-        "api_key": settings.fiware_api_key,
         "trigger_storage": settings.trigger_storage,
     }
 

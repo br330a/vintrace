@@ -1,6 +1,6 @@
 # Plano de testes e evidências — VinTrace
 
-Os estados abaixo refletem os ensaios executados durante a integração final. Evidências visuais serão organizadas na pasta `docs/evidencias/` na etapa final de entrega.
+Os estados abaixo refletem os ensaios executados durante a integração final. As evidências visuais já estão organizadas em [`docs/evidencias/`](evidencias/README.md).
 
 | ID | Teste | Critério | Estado |
 |---|---|---|---|
@@ -23,9 +23,9 @@ Os estados abaixo refletem os ensaios executados durante a integração final. E
 | T17 | Reconexão | ESP32 volta após reset/reconexão | **Aprovado em bancada** |
 | T18 | TFT | tela normal, alertas individuais e múltiplos legíveis | **Aprovado** |
 | T19 | Wine Memory | incidente real calculado pelo histórico | **Aprovado** |
-| T20 | Encapsulamento | montagem final segura e acessível | **A documentar** |
-| T21 | Manuais/Git/arquitetura | documentação reproduzível | **Em finalização** |
-| T22 | Vídeo/Forms/pitch | links finais e entrega | **Pendente da etapa de evidências** |
+| T20 | Encapsulamento | montagem final segura e acessível | **Pendente — impasse mecânico da carcaça** |
+| T21 | Manuais/Git/arquitetura | documentação reproduzível | **Aprovado** |
+| T22 | Vídeo/Forms/pitch | links finais e entrega | **Parcial — pitch/evidências prontos; vídeo e Forms pendentes** |
 
 ## Resultados técnicos registrados
 
@@ -33,7 +33,7 @@ Os estados abaixo refletem os ensaios executados durante a integração final. E
 
 ```text
 pytest -q
-8 passed
+9 passed
 ```
 
 ### Frontend
@@ -62,9 +62,9 @@ overall: healthy
 Exemplo de retorno observado:
 
 ```text
-24h: 98 pontos por série
-7d: 8 pontos por série
-30d: 8 pontos por série
+24h: 268 pontos por série
+7d: 13 pontos por série
+30d: 13 pontos por série
 source: sth-comet
 ```
 

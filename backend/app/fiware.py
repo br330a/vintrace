@@ -977,10 +977,13 @@ def calculate_wine_memory(
             if seconds > 0:
                 differences.append(seconds)
 
+        # O Wine Memory usa histórico de 30 dias, normalmente agregado por
+        # hora. Se houver um buraco de telemetria, não devemos interpretar
+        # várias horas sem dados como exposição contínua.
         if differences:
-            return max(int(median(differences)), 1)
+            return max(min(int(median(differences)), 3600), 1)
 
-        return max(int(settings.monitoring_interval), 1)
+        return max(min(int(settings.monitoring_interval), 3600), 1)
 
     def classify_point(
         point: HistoryPoint,
@@ -1031,6 +1034,7 @@ def calculate_wine_memory(
         start_point: HistoryPoint | None = None
         last_bad_point: HistoryPoint | None = None
         peak_value: float | None = None
+        bad_point_count = 0
 
         def deviation(value: float, direction: str) -> float:
             if direction == "low":
@@ -1047,6 +1051,7 @@ def calculate_wine_memory(
             nonlocal start_point
             nonlocal last_bad_point
             nonlocal peak_value
+            nonlocal bad_point_count
 
             if (
                 active_direction is None
@@ -1060,24 +1065,14 @@ def calculate_wine_memory(
             last_bad_dt = point_datetime(last_bad_point)
             end_dt = point_datetime(end_point) if end_point else None
 
+            # Cada ponto histórico representa no máximo um intervalo de
+            # `step_seconds`. Assim, lacunas sem telemetria não são somadas como
+            # se o sensor tivesse permanecido em anomalia durante todo o buraco.
+            duration_seconds = max(bad_point_count * step_seconds, step_seconds)
+
             if still_active:
-                if start_dt and last_bad_dt:
-                    duration_seconds = max(
-                        int((last_bad_dt - start_dt).total_seconds())
-                        + step_seconds,
-                        step_seconds,
-                    )
-                else:
-                    duration_seconds = step_seconds
                 ended_at = "Em andamento"
             else:
-                if start_dt and end_dt:
-                    duration_seconds = max(
-                        int((end_dt - start_dt).total_seconds()),
-                        step_seconds,
-                    )
-                else:
-                    duration_seconds = step_seconds
                 ended_at = end_point.time if end_point else last_bad_point.time
 
             exposure_seconds += duration_seconds
@@ -1111,6 +1106,7 @@ def calculate_wine_memory(
             start_point = None
             last_bad_point = None
             peak_value = None
+            bad_point_count = 0
 
         for point in ordered_points:
             total_intervals += 1
@@ -1132,6 +1128,7 @@ def calculate_wine_memory(
                 start_point = point
                 last_bad_point = point
                 peak_value = candidate_peak
+                bad_point_count = 1
 
                 start_dt = point_datetime(point)
                 if (
@@ -1153,6 +1150,7 @@ def calculate_wine_memory(
                 start_point = point
                 last_bad_point = point
                 peak_value = candidate_peak
+                bad_point_count = 1
 
                 start_dt = point_datetime(point)
                 if (
@@ -1168,6 +1166,7 @@ def calculate_wine_memory(
                 continue
 
             last_bad_point = point
+            bad_point_count += 1
 
             if (
                 peak_value is None

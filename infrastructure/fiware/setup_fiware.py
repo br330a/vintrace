@@ -22,6 +22,18 @@ HEADERS = {
 }
 
 
+def device_id_to_urn(device_id: str) -> str:
+    if device_id.startswith("urn:ngsi-ld:"):
+        return device_id
+
+    if device_id.lower().startswith("vintrace"):
+        suffix = device_id[len("vintrace"):].lstrip("_-")
+        if suffix:
+            return f"urn:ngsi-ld:{ENTITY_TYPE}:{suffix}"
+
+    return f"urn:ngsi-ld:{ENTITY_TYPE}:{device_id}"
+
+
 def check_services():
     print("--- 1. Verificando conectividade com o stack FIWARE ---")
     for name, url in [("Orion Context Broker", f"{ORION_URL}/version"),
@@ -102,8 +114,11 @@ def provision_default_device(device_id="vintrace001", name="Adega principal", lo
         "devices": [
             {
                 "device_id": device_id,
-                "entity_name": f"urn:ngsi-ld:{ENTITY_TYPE}:001",
+                "entity_name": device_id_to_urn(device_id),
                 "entity_type": ENTITY_TYPE,
+                "protocol": "PDI-IoTA-UltraLight",
+                "transport": "MQTT",
+                "apikey": API_KEY,
                 "timezone": "America/Sao_Paulo",
                 "attributes": [
                     {"object_id": "t", "name": "temperature", "type": "Number"},

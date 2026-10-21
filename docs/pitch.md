@@ -12,7 +12,7 @@ O VinTrace conecta sensores físicos a uma arquitetura FIWARE e a um dashboard w
 
 ## 3. Demonstração técnica
 
-1. Mostrar a carcaça e identificar ESP32, DHT11, LDR, TFT, LED e buzzer.
+1. Mostrar o protótipo físico e identificar ESP32, DHT11, LDR, TFT, LED e buzzer. Se a carcaça estiver concluída até a banca, apresentá-la neste momento.
 2. Abrir o dashboard e confirmar `vintrace001` online.
 3. Mostrar temperatura, umidade e luminosidade atuais.
 4. Mostrar os gráficos vindos do STH-Comet.

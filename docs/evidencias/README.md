@@ -8,11 +8,15 @@ As imagens demonstram a integração entre dashboard web, backend, FIWARE, STH-C
 
 ### Dashboard online
 
+![Dashboard online](imagens/dashboard-online.png)
+
 Arquivo: `imagens/dashboard-online.png`
 
 Demonstra o dashboard principal do VinTrace em funcionamento e conectado à infraestrutura utilizada pelo projeto.
 
 ### Dispositivo online
+
+![Dispositivo online](imagens/dispositivos-online.png)
 
 Arquivo: `imagens/dispositivos-online.png`
 
@@ -20,17 +24,23 @@ Demonstra o dispositivo `vintrace001` cadastrado e identificado como online, com
 
 ### Histórico de temperatura
 
+![Histórico de temperatura](imagens/graficos-temp.png)
+
 Arquivo: `imagens/graficos-temp.png`
 
 Demonstra a visualização dos dados históricos de temperatura obtidos por meio do STH-Comet.
 
 ### Histórico de luminosidade
 
+![Histórico de luminosidade](imagens/graficos-luz.png)
+
 Arquivo: `imagens/graficos-luz.png`
 
 Demonstra a visualização dos dados históricos de luminosidade armazenados pelo STH-Comet.
 
 ### Configuração dos triggers
+
+![Configuração dos triggers](imagens/triggers.png)
 
 Arquivo: `imagens/triggers.png`
 
@@ -39,6 +49,8 @@ Demonstra a configuração das faixas de temperatura, umidade e luminosidade atr
 Os limites são utilizados pelo backend para identificar anomalias e enviar comandos remotamente ao ESP32 através da infraestrutura FIWARE.
 
 ### Alerta no dashboard
+
+![Alerta no dashboard](imagens/alerta-dashboard.png)
 
 Arquivo: `imagens/alerta-dashboard.png`
 
@@ -55,6 +67,8 @@ Quando as condições retornam aos limites configurados, o alerta é encerrado r
 
 ### Wine Memory
 
+![Wine Memory](imagens/wine-memory.png)
+
 Arquivo: `imagens/wine-memory.png`
 
 Demonstra o Wine Memory, diferencial do VinTrace responsável por analisar o histórico ambiental do dispositivo.
@@ -69,6 +83,8 @@ A funcionalidade identifica exposições fora dos limites configurados e apresen
 - estabilidade ambiental.
 
 ### Simulação Wokwi
+
+![Simulação Wokwi](imagens/wokwi.png)
 
 Arquivo: `imagens/wokwi.png`
 

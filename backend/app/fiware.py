@@ -1203,8 +1203,9 @@ def calculate_wine_memory(
         "%",
     )
 
+    # Sem histórico não há evidência de estabilidade.
     stability = (
-        100.0
+        None
         if total_intervals == 0
         else round(
             (1 - (anomaly_intervals / total_intervals)) * 100,
@@ -1223,4 +1224,6 @@ def calculate_wine_memory(
         lastIncident=last_incident_text,
         stability=stability,
         incidents=incidents,
+        sampleCount=total_intervals,
+        source="estimated",
     )

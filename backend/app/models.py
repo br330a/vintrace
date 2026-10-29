@@ -93,8 +93,10 @@ class WineMemoryResponse(BaseModel):
     totalIncidents: int = 0
     exposureTime: str = "0 min"
     lastIncident: str = "Nenhum"
-    stability: float = 100.0
+    stability: float | None = None
     incidents: list[EnvironmentalIncident] = Field(default_factory=list)
+    sampleCount: int = 0
+    source: Literal["recorded", "estimated"] = "estimated"
 
 
 class AlertItem(BaseModel):

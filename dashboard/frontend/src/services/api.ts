@@ -73,8 +73,10 @@ export interface WineMemoryData {
   totalIncidents: number
   exposureTime: string
   lastIncident: string
-  stability: number
+  stability: number | null
   incidents: EnvironmentalIncident[]
+  sampleCount: number
+  source: 'recorded' | 'estimated'
 }
 
 export interface AlertItem {

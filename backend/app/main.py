@@ -24,6 +24,7 @@ from .models import (
     WineMemoryResponse,
 )
 from .monitor import monitor
+from .wine_memory_events import load_events, calculate_recorded_wine_memory
 from .triggers_store import (
     default_trigger_config,
     delete_device_triggers,
@@ -259,11 +260,15 @@ async def wine_memory_endpoint(device_id: str):
             period="30d",
         )
 
-        return calculate_wine_memory(
-            device_id,
-            series,
-            triggers,
-        )
+        # Prioriza os eventos registrados quando o alerta ocorreu:
+        # alterações posteriores dos triggers não apagam esse histórico.
+        events = await load_events(device_id)
+        if events:
+            return calculate_recorded_wine_memory(device_id, series, events)
+
+        # Compatibilidade: instalações antigas sem eventos persistidos
+        # ainda mostram uma estimativa baseada nas leituras do STH.
+        return calculate_wine_memory(device_id, series, triggers)
     except Exception as exc:
         raise HTTPException(
             status_code=503,

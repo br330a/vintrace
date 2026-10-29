@@ -10,6 +10,7 @@ import {
   History,
   Lightbulb,
   Loader2,
+  RefreshCw,
   ShieldCheck,
   Thermometer,
   TriangleAlert,
@@ -39,6 +40,9 @@ function WineMemoryPage() {
 
   const [error, setError] =
     useState('')
+
+  const [refreshKey, setRefreshKey] =
+    useState(0)
 
   useEffect(() => {
     const timeout =
@@ -92,38 +96,48 @@ function WineMemoryPage() {
       return
     }
 
-    const timeout =
-      setTimeout(() => {
-        void (async () => {
-          try {
-            setLoading(true)
-            setError('')
+    let cancelled = false
 
-            const data =
-              await api.getWineMemory(
-                deviceId,
-              )
+    const loadWineMemory = async (showLoading: boolean) => {
+      if (showLoading && !cancelled) {
+        setLoading(true)
+      }
 
-            setMemory(data)
-          } catch (
-            err: unknown
-          ) {
-            const msg =
-              err instanceof Error
-                ? err.message
-                : 'Falha ao consultar histórico do STH-Comet'
+      try {
+        const data = await api.getWineMemory(deviceId)
+        if (!cancelled) {
+          setMemory(data)
+          setError('')
+        }
+      } catch (err: unknown) {
+        if (!cancelled) {
+          const msg = err instanceof Error
+            ? err.message
+            : 'Falha ao consultar histórico do STH-Comet'
+          setError(msg)
+          setMemory(null)
+        }
+      } finally {
+        if (!cancelled && showLoading) {
+          setLoading(false)
+        }
+      }
+    }
 
-            setError(msg)
-            setMemory(null)
-          } finally {
-            setLoading(false)
-          }
-        })()
-      }, 0)
+    // Revalida a cada 30 s; não é mais necessário sair da tela.
+    const timeout = setTimeout(() => {
+      void loadWineMemory(true)
+    }, 0)
+    const interval = setInterval(() => {
+      void loadWineMemory(false)
+    }, 30000)
 
-    return () =>
+    return () => {
+      cancelled = true
       clearTimeout(timeout)
-  }, [deviceId])
+      clearInterval(interval)
+    }
+  }, [deviceId, refreshKey])
 
   function getIncidentIcon(
     type:
@@ -157,12 +171,13 @@ function WineMemoryPage() {
         </h1>
 
         <p className="mt-2 max-w-2xl text-zinc-400">
-          Consulte o histórico de exposição ambiental gerado a partir dos dados reais do STH-Comet comparados com os limites configurados.
+          Acompanhe os incidentes ambientais registrados e a estabilidade das medições históricas.
         </p>
       </div>
 
-      <div className="mt-8">
-        <label className="text-sm text-zinc-400">
+      <div className="mt-8 flex flex-wrap items-end gap-4">
+        <div>
+          <label className="text-sm text-zinc-400">
           Dispositivo
         </label>
 
@@ -203,6 +218,15 @@ function WineMemoryPage() {
             </option>
           )}
         </select>
+        </div>
+        <button
+          type="button"
+          onClick={() => setRefreshKey((value) => value + 1)}
+          className="inline-flex items-center gap-2 rounded-xl border border-zinc-700 px-4 py-3 text-sm text-zinc-200 transition hover:border-amber-400"
+          title="Atualizar Wine Memory"
+        >
+          <RefreshCw size={16} /> Atualizar
+        </button>
       </div>
 
       {error && (
@@ -213,7 +237,7 @@ function WineMemoryPage() {
           />
 
           <span>
-            STH-Comet indisponível ({error}).
+            Falha ao consultar o Wine Memory ({error}).
           </span>
         </div>
       )}
@@ -231,6 +255,12 @@ function WineMemoryPage() {
         </div>
       ) : memory ? (
         <>
+          <p className="mt-5 text-sm text-zinc-400">
+            {memory.source === 'recorded'
+              ? 'Ocorrências salvas no FIWARE no momento do alerta. Alterar os triggers depois não apaga esses registros.'
+              : 'Estimativa calculada com o histórico do STH-Comet e os triggers atuais. Alertas anteriores à ativação do registro persistente podem ser reavaliados.'}
+            {' '}Amostras consultadas: {memory.sampleCount}.
+          </p>
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
               <div className="flex items-center justify-between">
@@ -314,14 +344,19 @@ function WineMemoryPage() {
               </div>
 
               <p className="mt-3 text-3xl font-semibold">
-                {
-                  memory.stability
-                }
-                %
+                {memory.stability === null
+                  ? '—'
+                  : `${memory.stability.toLocaleString('pt-BR', {
+                      maximumFractionDigits: memory.stability > 99.9 ? 6 : 1,
+                    })}%`}
               </p>
 
               <p className="mt-2 text-sm text-zinc-500">
-                Período dentro dos limites
+                {memory.stability === null
+                  ? 'Sem histórico suficiente para calcular'
+                  : memory.source === 'recorded'
+                    ? 'Tempo observado sem incidentes registrados'
+                    : 'Amostras dentro dos limites atuais'}
               </p>
             </div>
           </div>
@@ -340,7 +375,9 @@ function WineMemoryPage() {
             {memory.incidents
               .length === 0 ? (
               <div className="p-8 text-center text-sm text-zinc-500">
-                Nenhum incidente fora dos limites foi registrado para este dispositivo.
+                {memory.sampleCount === 0
+                  ? 'Ainda não há medições suficientes no STH-Comet. Isso não significa estabilidade de 100%.'
+                  : 'Nenhum incidente identificado nos dados disponíveis. A ausência de ocorrências não garante estabilidade fora do período observado.'}
               </div>
             ) : (
               <div className="divide-y divide-zinc-800">
@@ -391,7 +428,9 @@ function WineMemoryPage() {
                             </p>
 
                             <p className="mt-1 text-xs text-zinc-500">
-                              Pico registrado
+                              {memory.source === 'recorded'
+                                ? 'Leitura no início do alerta'
+                                : 'Pico registrado no histórico'}
                             </p>
                           </div>
                         </div>

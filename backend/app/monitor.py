@@ -18,6 +18,7 @@ from .config import settings
 from .fiware import get_current_reading, send_fiware_command
 from .models import AlertItem, MonitoringStatus
 from .triggers_store import get_device_triggers
+from .wine_memory_events import record_transition
 
 
 logger = logging.getLogger("vintrace.monitor")
@@ -353,6 +354,23 @@ class AnomalyMonitor:
             current_state[
                 command_name
             ] = desired_state
+
+            # Registro persistente da ocorrência com o trigger vigente.
+            # Se o Orion não puder salvar o registro, o alerta físico
+            # continua funcionando; a falha fica visível nos logs.
+            try:
+                await record_transition(
+                    device_id=device_id,
+                    command=command_name,
+                    state=desired_state,
+                    value=value,
+                    limit=maximum if desired_state == ALERT_HIGH else minimum,
+                )
+            except Exception as exc:
+                logger.warning(
+                    "Não foi possível persistir ocorrência do Wine Memory (%s): %s",
+                    device_id, exc,
+                )
 
             # Sincronização inicial normal:
             # manda OFF para o ESP32, mas não cria
